@@ -1,4 +1,9 @@
-import type { Content, GoogleGenerativeAI, Part } from "@google/generative-ai"
+import type {
+  Content,
+  GenerativeModel,
+  GoogleGenerativeAI,
+  Part,
+} from "@google/generative-ai"
 import { HarmBlockThreshold, HarmCategory } from "@google/generative-ai"
 import type { OpenAI } from "./types.ts"
 
@@ -75,10 +80,8 @@ function hasImageMessage(
 
 export function genModel(
   genAi: GoogleGenerativeAI,
-  req:
-    | OpenAI.ChatCompletionCreateParamsNonStreaming
-    | OpenAI.ChatCompletionCreateParamsStreaming,
-) {
+  req: OpenAI.Chat.ChatCompletionCreateParams,
+): GenerativeModel {
   const model = genAi.getGenerativeModel({
     model: hasImageMessage(req.messages)
       ? GeminiModel.GEMINI_PRO_VISION

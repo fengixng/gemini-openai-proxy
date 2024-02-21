@@ -1988,6 +1988,68 @@ var chatProxyHandler = async (c) => {
   return nonStreamingChatProxyHandler(c, req, genAi);
 };
 
+// src/v1/models.ts
+var modelData = [
+  {
+    created: 1677610602,
+    object: "model",
+    owned_by: "openai",
+    id: "gpt-3.5-turbo"
+  },
+  {
+    created: 1677649963,
+    object: "model",
+    owned_by: "openai",
+    id: "gpt-3.5-turbo-0301"
+  },
+  {
+    created: 1686587434,
+    object: "model",
+    owned_by: "openai",
+    id: "gpt-3.5-turbo-0613"
+  },
+  {
+    created: 1683758102,
+    object: "model",
+    owned_by: "openai-internal",
+    id: "gpt-3.5-turbo-16k"
+  },
+  {
+    created: 1685474247,
+    object: "model",
+    owned_by: "openai",
+    id: "gpt-3.5-turbo-16k-0613"
+  },
+  {
+    created: 1687882411,
+    object: "model",
+    owned_by: "openai",
+    id: "gpt-4"
+  },
+  {
+    created: 1687882410,
+    object: "model",
+    owned_by: "openai",
+    id: "gpt-4-0314"
+  },
+  {
+    created: 1686588896,
+    object: "model",
+    owned_by: "openai",
+    id: "gpt-4-0613"
+  }
+];
+var models = async (c) => {
+  return c.json({
+    object: "list",
+    data: modelData
+  });
+};
+var modelDetail = async (c) => {
+  const model = c.req.param("model");
+  return c.json(modelData.find((it) => it.id === model));
+};
+
 // src/app.ts
 var app = new Hono2({ strict: true }).use("*", cors(), timing(), logger()).use("*", async (c, next) => {
   const logger2 = gen_logger(crypto.randomUUID());
@@ -2010,7 +2072,7 @@ curl ${origin}/v1/chat/completions \\
         "temperature": 0.7
         }'
 `);
-}).post("/v1/chat/completions", chatProxyHandler);
+}).post("/v1/chat/completions", chatProxyHandler).get("/v1/models", models).get("/v1/models/:model", modelDetail);
 
 // main_deno.ts
 Deno.serve({ port: 8e3 }, app.fetch);
